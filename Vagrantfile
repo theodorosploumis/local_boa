@@ -12,9 +12,10 @@ Vagrant.configure(2) do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "wheezy64"
+  config.vm.box = "Debian Wheezy 7.6 amd64 (Minimal + VirtualBox Guest Additions 4.3.16, 2014.09.28)"
   # BOA needs a vanilla box.
-  config.vm.box_url = "https://dl.dropboxusercontent.com/s/xymcvez85i29lym/vagrant-debian-wheezy64.box"
+  # We got this from http://www.vagrantbox.es. Other boxes may work fine also.
+  config.vm.box_url = "https://github.com/jose-lpa/packer-debian_7.6.0/releases/download/1.0/packer_virtualbox-iso_virtualbox.box"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -25,12 +26,10 @@ Vagrant.configure(2) do |config|
   # Set guest OS
   config.vm.guest = :debian
 
-  # Config ssh settings
-  config.ssh.username = "root"
-  config.ssh.password = 'vagrant'
-  config.ssh.insert_key = true
-  config.ssh.private_key_path = "~/.ssh/id_rsa"
-  config.ssh.forward_agent = true
+  # IMPORTANT! Enable login as root after running the BOA installer.
+  # Because BOA will remove vagrant user fro the system!
+  #config.ssh.username = "root"
+  #config.ssh.password = 'vagrant'
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
@@ -42,15 +41,20 @@ Vagrant.configure(2) do |config|
   # using a specific IP.
   # Example of local ip: 192.168.44.42
   config.vm.network "private_network", ip: "192.168.44.42"
+  # plugin https://github.com/cogitatio/vagrant-hostsupdater
+  config.hostsupdater.aliases = [
+    # aegir installer will create these entries on host machine
+    'aegir.local',
+    'sub.aegir.local',
+    'o1.sub.aegir.local',
+    'chive.aegir.local',
+    # Any sites that may be installed via aegir. Eg.
+    #'dev.example.com',
+  ]
 
-  # Create a public network, which generally matched to bridged network.
-  # config.vm.network "public_network"
-
-  # Provider-specific configuration so you can fine-tune various
-  # backing providers for Vagrant.
+  # Provider-specific configuration so you can fine-tune various backing providers for Vagrant.
   config.vm.provider "virtualbox" do |vb|
-  #   vb.gui = true
-        vb.memory = "2048"
+    vb.memory = "2048"
   end
 
 end
